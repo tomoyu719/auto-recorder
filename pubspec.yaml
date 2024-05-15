@@ -19,7 +19,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.4 <4.0.0'
+  # sdk: '>=3.13.5 <4.0.0'
+  sdk: '>=3.2.3 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -31,27 +32,21 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
-  riverpod: ^2.5.0
-  flutter_riverpod: ^2.4.10
+  flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.4
-  file: ^7.0.0
-  intl: ^0.19.0
   shared_preferences: ^2.2.3
   path: ^1.8.3
-  rxdart: ^0.27.7
   path_provider: ^2.1.3
   mic_stream: ^0.7.1+2
   async: ^2.11.0
   permission_handler: ^11.0.1
   app_settings: ^5.1.1
-  wav: ^1.3.0
   just_audio: ^0.9.37
-  audio_streamer:
-  
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+  record: ^5.0.5
 
 dev_dependencies:
   flutter_test:
@@ -64,9 +59,11 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   build_runner: ^2.4.9
-  riverpod_generator: ^2.3.11
+  riverpod_generator: ^2.4.0
   custom_lint:
-  riverpod_lint:
+  freezed:
+  isar_generator:
+  mockito: ^5.4.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
