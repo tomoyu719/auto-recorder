@@ -1,16 +1,9 @@
 # auto_recorder
+A Noise-Activated Recording App
 
-A new Flutter project.
+## Description
+Auto-Recorder is an innovative Flutter application that utilizes the device’s microphone to actively monitor ambient sound levels. When the app detects noise above a predefined threshold, it automatically initiates audio recording, capturing the surrounding sounds.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Features
+Automatic Noise Detection: The app continuously listens for environmental sounds and starts recording when the noise level exceeds the user-set sensitivity.
+Adjustable Sensitivity: Users can adjust the noise threshold to ensure the recorder activates only when desired, preventing unnecessary recordings during minimal noise disturbances.
