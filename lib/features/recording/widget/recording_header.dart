@@ -1,5 +1,4 @@
 import 'package:auto_recorder/features/recording/sound_monitor/sound_monitor.dart';
-import 'package:auto_recorder/features/recording/widget/fade_transition.dart';
 import 'package:auto_recorder/features/recording/widget/header_title.dart';
 import 'package:auto_recorder/features/recording/widget/recording_list_item.dart';
 import 'package:auto_recorder/features/setting.dart';
