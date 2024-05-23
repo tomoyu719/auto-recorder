@@ -3,8 +3,8 @@
 
     <application
         android:label="auto_recorder"
-        android:name="${applicationName}"
-        android:icon="@mipmap/noise_detection_icon">
+        android:icon="@mipmap/ic_launcher"
+        android:name="${applicationName}">
         <activity
             android:name=".MainActivity"
             android:exported="true"
