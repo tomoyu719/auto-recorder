@@ -177,6 +177,7 @@ Stream<Duration> remain(RemainRef ref) async* {
   if (!isRecording) {
     yield waitingTime;
   }
+
   final elapsedLastDetection =
       await ref.watch(elapsedLastDetectionProvider.future);
   final remain = waitingTime - elapsedLastDetection;

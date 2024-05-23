@@ -54,16 +54,6 @@ class SelectingRecordings extends _$SelectingRecordings {
 
 typedef OnDismissRecording = void Function(Recording recording);
 
-// class RecordingItem extends ConsumerStatefulWidget {
-//   const RecordingItem(this.animation, {this.onDismiss, super.key});
-//   final OnDismissRecording? onDismiss;
-
-//   final Animation<double> animation;
-
-//   @override
-//   RecordingItemState createState() => RecordingItemState();
-// }
-
 class RecordingItem extends ConsumerWidget {
   const RecordingItem(this.animation, {this.onDismiss, super.key});
 
@@ -86,7 +76,6 @@ class RecordingItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Widget build(BuildContext context, WidgetRef ref) {
     final recording = ref.watch(recordingListItemProvider);
     final isPlayingCurrent =
         ref.watch(isPlayingCurrentRecordingProvider(recording));
@@ -121,7 +110,7 @@ class RecordingItem extends ConsumerWidget {
                   .read(selectingRecordingsProvider.notifier)
                   .select(recording),
           title: Text(_formatDateTime(recording.date!)),
-          subtitle: Text(_formatDuration(recording.milliSeconds!)),
+          subtitle: Text(_formatDuration(recording.milliSeconds ?? 0)),
           leading: isSelectingCurrent
               ? const Icon(Icons.check)
               : isPlayingCurrent
