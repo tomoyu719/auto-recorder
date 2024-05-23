@@ -4,7 +4,7 @@
     <application
         android:label="auto_recorder"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/noise_detection_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
