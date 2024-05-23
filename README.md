@@ -7,3 +7,5 @@ Auto-Recorder is an innovative Flutter application that utilizes the device’s 
 ## Features
 Automatic Noise Detection: The app continuously listens for environmental sounds and starts recording when the noise level exceeds the user-set sensitivity.
 Adjustable Sensitivity: Users can adjust the noise threshold to ensure the recorder activates only when desired, preventing unnecessary recordings during minimal noise disturbances.
+
+![amaozon](https://github.com/tomoyu719/auto-recorder/blob/images/amazon-appstore-badge-jp-white.eps)
