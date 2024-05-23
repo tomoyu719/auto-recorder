@@ -13,7 +13,7 @@ class HeaderTitle extends ConsumerWidget {
     final style = Theme.of(context).textTheme.headlineMedium;
 
     return !isActive
-        ? Text('Auto Recorder', style: style)
+        ? Text('Noise Recorder', style: style)
         : ref.watch(remainProvider).when(
               skipLoadingOnReload: true,
               data: (remain) {
