@@ -14,7 +14,7 @@ class SoundLevelWidget extends ConsumerWidget {
     final isActive = ref.watch(isActiveProvider);
     return isActive
         ? ColoredBox(
-            color: Colors.white,
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: dbSpl.when(
