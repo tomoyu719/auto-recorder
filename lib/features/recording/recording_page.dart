@@ -156,10 +156,7 @@ class ListModel<E> {
 
   void insert(int index, E item) {
     _items.insert(index, item);
-    _animatedList?.insertItem(
-      index,
-      duration: const Duration(milliseconds: 1000),
-    );
+    _animatedList!.insertItem(index);
   }
 
   E remove(int index, {bool isDoAnimation = true}) {
@@ -170,7 +167,6 @@ class ListModel<E> {
         (BuildContext context, Animation<double> animation) => isDoAnimation
             ? removedItemBuilder(removedItem, context, animation)
             : const SizedBox.shrink(),
-        duration: const Duration(milliseconds: 1000),
       );
     }
     return removedItem;
