@@ -7,6 +7,7 @@ import 'package:auto_recorder/features/recording/widget/recording_list.dart';
 import 'package:auto_recorder/features/recording/widget/recording_list_item.dart';
 import 'package:auto_recorder/features/recording/widget/sound_level.dart';
 import 'package:auto_recorder/features/remove_recording_service.dart';
+import 'package:auto_recorder/features/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -35,17 +36,13 @@ class RecordingPageState extends ConsumerState {
 
   @override
   void initState() {
-    soundMonitor = ref.read(
-      soundMonitorProvider(
-        onFinishRecording: (recording) {
-          _listModel.insert(0, recording);
-          ref.read(databaseProvider).add(recording);
-        },
-        openAppSettings: _openAppSettings,
-      ),
-    );
+    soundMonitor =
+        ref.read(soundMonitorProvider(onFinishRecording: onFinishRecording));
     super.initState();
   }
+
+  void onFinishRecording(Recording recording) =>
+      _listModel.insert(0, recording);
 
   @override
   void dispose() {
@@ -91,7 +88,9 @@ class RecordingPageState extends ConsumerState {
         tooltip: 'Start monitoring',
         onPressed: () {
           final isActive = ref.read(isActiveProvider);
-          isActive ? soundMonitor.passive() : soundMonitor.active();
+          isActive
+              ? soundMonitor.passive()
+              : soundMonitor.active(onConfirmPermission: _openAppSettings);
         },
         child: Consumer(
           builder: (context, ref, child) => ref.watch(isActiveProvider)
@@ -100,7 +99,15 @@ class RecordingPageState extends ConsumerState {
         ),
       ),
       appBar: RecordingHeader(
-        soundMonitor,
+        onTapSettings: () {
+          soundMonitor.passive();
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              fullscreenDialog: true,
+              builder: (context) => const SettingScreen(),
+            ),
+          );
+        },
         onTapRemove: () {
           final targetRecordings = ref.read(selectingRecordingsProvider);
           for (final recording in targetRecordings) {
