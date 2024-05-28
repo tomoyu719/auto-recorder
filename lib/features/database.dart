@@ -1,13 +1,14 @@
 import 'package:auto_recorder/features/recording/model/recording.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final databaseProvider = Provider<Database>(
-  (ref) => throw UnimplementedError(
-    'databaseProvider must override at main function',
-  ),
-);
+part 'database.g.dart';
+
+@Riverpod(keepAlive: true)
+Database database(DatabaseRef ref) => throw UnimplementedError(
+      'databaseProvider must override at main function',
+    );
 
 class Database {
   const Database(this._isar);

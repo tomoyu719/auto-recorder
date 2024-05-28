@@ -1,16 +1,16 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'file_dir.g.dart';
 
-final tempFileDirProvider = Provider<String>((_) => throw UnimplementedError(
-    'tempFileDirProvider must override at main function',),);
-final tempFilePathProvider = Provider.family<String, String>((ref, fileName) {
-  final tempFileDir = ref.watch(tempFileDirProvider);
-  return join(tempFileDir, fileName);
-});
-final audiosFileDirProvider = Provider<String>((_) => throw UnimplementedError(
-    'tempFileDirProvider must override at main function',),);
+@Riverpod(keepAlive: true)
+String tempFileDir(TempFileDirRef ref) {
+  throw UnimplementedError(
+    'tempFileDirProvider must override at main function',
+  );
+}
 
-final audioFilePathProvider = Provider.family<String, String>((ref, fileName) {
-  final audioFileDir = ref.watch(audiosFileDirProvider);
-  return join(audioFileDir, fileName);
-});
+@Riverpod(keepAlive: true)
+String audiosFileDir(AudiosFileDirRef ref) {
+  throw UnimplementedError(
+    'audiosFileDirProvider must override at main function',
+  );
+}

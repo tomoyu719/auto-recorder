@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:auto_recorder/constants/decibel.dart';
 import 'package:auto_recorder/features/recording/sound_monitor/sound_monitor.dart';
 import 'package:auto_recorder/features/shared_preferences.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mic_stream/mic_stream.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -16,10 +15,6 @@ part 'sound_util.g.dart';
 /// The [dbfs] stream emits the dBFS values based on the microphone input.
 /// It uses the [MicStream.microphone] stream from the audio package to capture
 /// the microphone audio and convert it to dBFS values.
-///
-/// The [isActiveProvider] is used to determine if the microphone is active.
-/// If it is active, the [dbfs] stream will continuously emit the dBFS values.
-/// Otherwise, it will emit the minimum dBFS value.
 ///
 /// The [minDb] and [maxDb] parameters define the minimum and
 /// maximum dBFS values that the emitted values will be clamped to.
@@ -106,7 +101,7 @@ Stream<Duration> elapsed(ElapsedRef ref) async* {
 
 /// StreamProvider that emits the latest loudness detection time.
 ///
-/// The [latestDetectionState] state provider is used to store and
+/// The [latestDetectionStateProvider] state provider is used to store and
 /// access the latest detection duration.
 @Riverpod(keepAlive: true)
 Stream<Duration> latestDetectionTime(LatestDetectionTimeRef ref) async* {
@@ -119,13 +114,21 @@ Stream<Duration> latestDetectionTime(LatestDetectionTimeRef ref) async* {
   final dbfs = await ref.watch(dbfsProvider.future);
   final elapsed = await ref.read(elapsedProvider.future);
   if (dbfs >= threshold) {
-    ref.read(latestDetectionState.notifier).state = elapsed;
+    ref.read(latestDetectionStateProvider.notifier).onDetection(elapsed);
   }
-  yield ref.read(latestDetectionState);
+  yield ref.read(latestDetectionStateProvider);
 }
 
-final latestDetectionState = StateProvider<Duration>((ref) => Duration.zero);
+@Riverpod(keepAlive: true)
+class LatestDetectionState extends _$LatestDetectionState {
+  @override
+  Duration build() => Duration.zero;
 
+  // ignore: use_setters_to_change_properties
+  void onDetection(Duration latestDetection) => state = latestDetection;
+}
+
+// final latestDetectionState = StateProvider<Duration>((ref) => Duration.zero);
 const maxWaitTime = Duration(minutes: 1);
 
 enum RecordingSignals { startRecording, stopRecording, none }
@@ -177,7 +180,6 @@ Stream<Duration> remain(RemainRef ref) async* {
   if (!isRecording) {
     yield waitingTime;
   }
-
   final elapsedLastDetection =
       await ref.watch(elapsedLastDetectionProvider.future);
   final remain = waitingTime - elapsedLastDetection;
