@@ -5,46 +5,42 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'player.g.dart';
 
 /// Provider to determine if it is currently playing.
-final isPlayingProvider = Provider<bool>(
-  (ref) => ref.watch(audioPlayerProvider.select((value) => value.isPlaying)),
-);
+final isPlayingProvider = StateProvider<bool>((_) => false);
 
 /// Provider for the currently playing recording.
-final playingRecordingProvider = Provider<Recording?>(
-  (ref) =>
-      ref.watch(audioPlayerProvider.select((value) => value.currentlyPlaying)),
-);
+final playingRecordingProvider = StateProvider<Recording?>((_) => null);
 
 @Riverpod(keepAlive: true)
 Player audioPlayer(AudioPlayerRef ref) {
   final player = AudioPlayer();
   ref.onDispose(player.dispose);
-  return Player(player);
+  return Player(player, ref);
 }
 
+typedef RecordingCallBack = void Function(Recording);
+
 class Player {
-  Player(this._audioPlayer)
-      : isPlaying = false,
-        currentlyPlaying = null;
+  const Player(this._audioPlayer, this.ref);
 
+  final Ref ref;
   final AudioPlayer _audioPlayer;
-
-  bool isPlaying;
-  Recording? currentlyPlaying;
 
   Future<Duration?> getDuration(String filePath) {
     return _audioPlayer.setFilePath(filePath);
   }
 
   Future<void> play(Recording recording) async {
-    currentlyPlaying = recording;
+    ref.read(isPlayingProvider.notifier).state = true;
+    ref.read(playingRecordingProvider.notifier).state = recording;
     await _audioPlayer.setFilePath(recording.path!);
     await _audioPlayer.play();
-    stop();
+    await stop();
   }
 
-  void stop() {
-    currentlyPlaying = null;
-    _audioPlayer.stop();
+  Future<void> stop() async {
+    ref.read(isPlayingProvider.notifier).state = false;
+    ref.read(playingRecordingProvider.notifier).state = null;
+
+    await _audioPlayer.stop();
   }
 }
