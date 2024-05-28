@@ -1,20 +1,34 @@
-import 'package:auto_recorder/features/file_dir.dart';
-import 'package:auto_recorder/features/player.dart';
+import 'dart:async';
+
+import 'package:auto_recorder/features/database.dart';
+import 'package:auto_recorder/features/recorder.dart';
 import 'package:auto_recorder/features/recording/model/recording.dart';
 import 'package:auto_recorder/features/recording/sound_monitor/sound_util.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:record/record.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sound_monitor.g.dart';
 
-final isActiveProvider = StateProvider<bool>((_) => false);
+@Riverpod(keepAlive: true)
+class IsActive extends _$IsActive {
+  @override
+  bool build() => false;
 
-final isRecordingProvider = StateProvider<bool>((_) => false);
+  void onActive() => state = true;
+  void onPassive() => state = false;
+}
+
+@Riverpod(keepAlive: true)
+class IsRecording extends _$IsRecording {
+  @override
+  bool build() => false;
+
+  void onRecording() => state = true;
+  void onFinish() => state = false;
+}
 
 typedef RecordingFinishedCallBack = void Function(Recording);
 
@@ -22,25 +36,24 @@ typedef RecordingFinishedCallBack = void Function(Recording);
 SoundMonitor soundMonitor(
   SoundMonitorRef ref, {
   required RecordingFinishedCallBack onFinishRecording,
-  required VoidCallback openAppSettings,
 }) =>
-    SoundMonitor(ref, onFinishRecording, openAppSettings);
+    SoundMonitor(ref, onFinishRecording: onFinishRecording);
 
 /// A class that monitors sound and handles recording functionality.
 class SoundMonitor {
-  SoundMonitor(this.ref, this.onFinishRecording, this.onConfirmPermission)
-      : recorder = AudioRecorder();
+  SoundMonitor(this.ref, {required this.onFinishRecording});
 
   final RecordingFinishedCallBack onFinishRecording;
-  final VoidCallback onConfirmPermission;
+
   final Ref ref;
-  final AudioRecorder recorder;
+  IsActive get isActiveNotifier => ref.read(isActiveProvider.notifier);
+  IsRecording get isRecordingNotifier => ref.read(isRecordingProvider.notifier);
+  bool get isActive => ref.read(isActiveProvider);
+  bool get isRecording => ref.read(isRecordingProvider);
+
+  Recorder get recorder => ref.read(recorderProvider);
 
   ProviderSubscription? _recordingSignalSubscription;
-
-  DateTime? _startRecordingTime;
-  String? _outputFileName;
-  String? _outputFilePath;
 
   /// Activates the sound monitor.
   ///
@@ -48,24 +61,20 @@ class SoundMonitor {
   /// and playback status, then starts monitoring the recording signal.
   /// If the user does not grant permission, the method
   /// returns without activating the sound monitor.
-  Future<void> active() async {
-    final hasPermission = await handlePermission(onConfirmPermission);
+  Future<void> active({required VoidCallback onConfirmPermission}) async {
+    final hasPermission = await _handlePermission(onConfirmPermission);
     if (!hasPermission) {
       return;
     }
-    final isPlaying = ref.read(isPlayingProvider);
-    if (isPlaying) {
-      ref.read(audioPlayerProvider).stop();
-    }
-    ref.read(isActiveProvider.notifier).state = true;
+    isActiveNotifier.onActive();
     _recordingSignalSubscription =
         ref.listen(recordingSignalProvider.future, (_, value) async {
       final signal = await value;
       switch (signal) {
         case RecordingSignals.startRecording:
-          _onStartRecord();
+          _startRecording();
         case RecordingSignals.stopRecording:
-          await _onFinishRecord();
+          await _finishRecording();
         case RecordingSignals.none:
           break;
       }
@@ -79,49 +88,32 @@ class SoundMonitor {
   /// If a recording is in progress, it is finished before deactivating
   /// the sound monitor.
   Future<void> passive() async {
-    ref.read(isActiveProvider.notifier).state = false;
-    if (ref.read(isRecordingProvider)) {
-      await _onFinishRecord();
+    if (isRecording) {
+      await _finishRecording();
     }
-    ref.read(isRecordingProvider.notifier).state = false;
+    isActiveNotifier.onPassive();
     _recordingSignalSubscription?.close();
     _recordingSignalSubscription = null;
   }
 
-  void _onStartRecord() {
-    if (ref.read(isRecordingProvider)) {
-      return;
-    }
-    ref.read(isRecordingProvider.notifier).state = true;
-    _startRecordingTime = DateTime.now();
-    _outputFileName =
-        'recording_${_startRecordingTime!.millisecondsSinceEpoch}.m4a';
-    _outputFilePath = join(ref.read(audiosFileDirProvider), _outputFileName);
-    recorder.start(const RecordConfig(), path: _outputFilePath!);
+  void _startRecording() {
+    isRecordingNotifier.onRecording();
+    final recordStart = DateTime.now();
+    recorder.record(recordStart);
   }
 
-  Future<void> _onFinishRecord() async {
-    if (!ref.read(isRecordingProvider)) {
+  Future<void> _finishRecording() async {
+    isRecordingNotifier.onFinish();
+    final recording = await recorder.finish();
+    if (recording == null) {
       return;
     }
-    ref.read(isRecordingProvider.notifier).state = false;
-
-    await recorder.stop();
-    final duration =
-        await ref.read(audioPlayerProvider).getDuration(_outputFilePath!);
-    if (duration == null) {
-      return;
-    }
-    final recording = Recording(
-      date: _startRecordingTime,
-      path: _outputFilePath,
-      milliSeconds: duration.inMilliseconds,
-    );
     onFinishRecording(recording);
+    await ref.read(databaseProvider).add(recording);
   }
 }
 
-Future<bool> handlePermission(VoidCallback openAppSettings) async {
+Future<bool> _handlePermission(VoidCallback openAppSettings) async {
   final status = await Permission.microphone.status;
   if (status.isPermanentlyDenied) {
     openAppSettings();

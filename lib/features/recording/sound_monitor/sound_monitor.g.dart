@@ -6,7 +6,7 @@ part of 'sound_monitor.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$soundMonitorHash() => r'abcc3d92890f2ee82371293724b3186e8031623b';
+String _$soundMonitorHash() => r'366c3e0be8576b5d8214f2d3e318e1870fc882f0';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -41,11 +41,9 @@ class SoundMonitorFamily extends Family<SoundMonitor> {
   /// See also [soundMonitor].
   SoundMonitorProvider call({
     required void Function(Recording) onFinishRecording,
-    required void Function() openAppSettings,
   }) {
     return SoundMonitorProvider(
       onFinishRecording: onFinishRecording,
-      openAppSettings: openAppSettings,
     );
   }
 
@@ -55,7 +53,6 @@ class SoundMonitorFamily extends Family<SoundMonitor> {
   ) {
     return call(
       onFinishRecording: provider.onFinishRecording,
-      openAppSettings: provider.openAppSettings,
     );
   }
 
@@ -79,12 +76,10 @@ class SoundMonitorProvider extends Provider<SoundMonitor> {
   /// See also [soundMonitor].
   SoundMonitorProvider({
     required void Function(Recording) onFinishRecording,
-    required void Function() openAppSettings,
   }) : this._internal(
           (ref) => soundMonitor(
             ref as SoundMonitorRef,
             onFinishRecording: onFinishRecording,
-            openAppSettings: openAppSettings,
           ),
           from: soundMonitorProvider,
           name: r'soundMonitorProvider',
@@ -96,7 +91,6 @@ class SoundMonitorProvider extends Provider<SoundMonitor> {
           allTransitiveDependencies:
               SoundMonitorFamily._allTransitiveDependencies,
           onFinishRecording: onFinishRecording,
-          openAppSettings: openAppSettings,
         );
 
   SoundMonitorProvider._internal(
@@ -107,11 +101,9 @@ class SoundMonitorProvider extends Provider<SoundMonitor> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.onFinishRecording,
-    required this.openAppSettings,
   }) : super.internal();
 
   final void Function(Recording) onFinishRecording;
-  final void Function() openAppSettings;
 
   @override
   Override overrideWith(
@@ -127,7 +119,6 @@ class SoundMonitorProvider extends Provider<SoundMonitor> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         onFinishRecording: onFinishRecording,
-        openAppSettings: openAppSettings,
       ),
     );
   }
@@ -140,15 +131,13 @@ class SoundMonitorProvider extends Provider<SoundMonitor> {
   @override
   bool operator ==(Object other) {
     return other is SoundMonitorProvider &&
-        other.onFinishRecording == onFinishRecording &&
-        other.openAppSettings == openAppSettings;
+        other.onFinishRecording == onFinishRecording;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, onFinishRecording.hashCode);
-    hash = _SystemHash.combine(hash, openAppSettings.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -157,9 +146,6 @@ class SoundMonitorProvider extends Provider<SoundMonitor> {
 mixin SoundMonitorRef on ProviderRef<SoundMonitor> {
   /// The parameter `onFinishRecording` of this provider.
   void Function(Recording) get onFinishRecording;
-
-  /// The parameter `openAppSettings` of this provider.
-  void Function() get openAppSettings;
 }
 
 class _SoundMonitorProviderElement extends ProviderElement<SoundMonitor>
@@ -169,9 +155,35 @@ class _SoundMonitorProviderElement extends ProviderElement<SoundMonitor>
   @override
   void Function(Recording) get onFinishRecording =>
       (origin as SoundMonitorProvider).onFinishRecording;
-  @override
-  void Function() get openAppSettings =>
-      (origin as SoundMonitorProvider).openAppSettings;
 }
+
+String _$isActiveHash() => r'8d8a278c94c74fa1bbf4e453da4f5f4c53f83694';
+
+/// See also [IsActive].
+@ProviderFor(IsActive)
+final isActiveProvider = NotifierProvider<IsActive, bool>.internal(
+  IsActive.new,
+  name: r'isActiveProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$isActiveHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$IsActive = Notifier<bool>;
+String _$isRecordingHash() => r'28de3246515e356778720e34088d78789b6b6dba';
+
+/// See also [IsRecording].
+@ProviderFor(IsRecording)
+final isRecordingProvider = NotifierProvider<IsRecording, bool>.internal(
+  IsRecording.new,
+  name: r'isRecordingProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$isRecordingHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$IsRecording = Notifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
