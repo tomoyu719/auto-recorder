@@ -1,3 +1,4 @@
+// ignore_for_file: scoped_providers_should_specify_dependencies
 import 'package:auto_recorder/app.dart';
 import 'package:auto_recorder/features/recording/recording_page.dart';
 import 'package:auto_recorder/features/recording/sound_monitor/sound_monitor.dart';
@@ -66,11 +67,13 @@ void main() {
           recordingListItemProvider.overrideWithValue(mockRecording),
           isPlayingCurrentRecordingProvider.overrideWith((ref, arg) => true),
           isSelectingCurrentProvider.overrideWith((ref, arg) => false),
-          isActiveProvider.overrideWith((ref) => false),
         ],
         child: const App(),
       ),
     );
+    final element = tester.element(find.byType(App));
+    final container = ProviderScope.containerOf(element);
+    container.read(isActiveProvider.notifier).onActive();
 
     expect(find.byIcon(Icons.check), findsNothing);
     expect(find.byIcon(Icons.stop), findsOneWidget);

@@ -14,10 +14,6 @@ String _$dbfsHash() => r'29aed03daa2333a56f475f0aa5691d17c0742dde';
 /// It uses the [MicStream.microphone] stream from the audio package to capture
 /// the microphone audio and convert it to dBFS values.
 ///
-/// The [isActiveProvider] is used to determine if the microphone is active.
-/// If it is active, the [dbfs] stream will continuously emit the dBFS values.
-/// Otherwise, it will emit the minimum dBFS value.
-///
 /// The [minDb] and [maxDb] parameters define the minimum and
 /// maximum dBFS values that the emitted values will be clamped to.
 ///
@@ -82,11 +78,11 @@ final elapsedProvider = StreamProvider<Duration>.internal(
 
 typedef ElapsedRef = StreamProviderRef<Duration>;
 String _$latestDetectionTimeHash() =>
-    r'49d955bd9e32c00abd5f6c4be148433e79255e99';
+    r'bfefab9891f44501f9b15cb1e2693735faeb4892';
 
 /// StreamProvider that emits the latest loudness detection time.
 ///
-/// The [latestDetectionState] state provider is used to store and
+/// The [latestDetectionStateProvider] state provider is used to store and
 /// access the latest detection duration.
 ///
 /// Copied from [latestDetectionTime].
@@ -148,6 +144,23 @@ final remainProvider = StreamProvider<Duration>.internal(
 );
 
 typedef RemainRef = StreamProviderRef<Duration>;
+String _$latestDetectionStateHash() =>
+    r'90cf1519fcfc8101b73a2213a98d17a66620a6e6';
+
+/// See also [LatestDetectionState].
+@ProviderFor(LatestDetectionState)
+final latestDetectionStateProvider =
+    NotifierProvider<LatestDetectionState, Duration>.internal(
+  LatestDetectionState.new,
+  name: r'latestDetectionStateProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$latestDetectionStateHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$LatestDetectionState = Notifier<Duration>;
 String _$thresholdDbfsHash() => r'e1422d9d6519428189c7d7d8a295f9b4f0cc73a7';
 
 /// See also [ThresholdDbfs].
